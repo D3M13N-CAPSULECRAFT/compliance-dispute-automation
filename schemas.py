@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
-from datetime import datetime
-from enum import Enum, auto
+from datetime import datetime, timezone
+from enum import Enum
 import re
 
 class SeverityLevel(Enum):
@@ -15,10 +15,10 @@ class DisputePayload:
     entity_id: str
     reason: str
     severity: SeverityLevel
-    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
     def __post_init__(self):
-        # Validate dispute_id format (e.g., DSP-XXXXX)
+        # Validate dispute_id format (DSP-XXXXX)
         if not re.match(r"^DSP-\d{5,10}$", self.dispute_id):
             raise ValueError(f"Invalid dispute_id format: '{self.dispute_id}'. Must match pattern DSP-XXXXX")
 
