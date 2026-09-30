@@ -15,7 +15,7 @@ class JSONAuditFormatter(logging.Formatter):
         if hasattr(record, "audit_context") and isinstance(record.audit_context, dict):
             log_data["context"] = record.audit_context
             
-        return json.dumps(log_data)
+        return json.dumps)log_data)
 
 def setup_audit_logger(log_file: str = "audit.jsonl") -> logging.Logger:
     logger = logging.getLogger("compliance_audit")

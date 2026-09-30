@@ -22,7 +22,7 @@ class DisputePayload:
 
     def __post_init__(self):
         try:
-            if not re.match(r"^DSP-\d{5,10}$", self.dispute_id):
+            if not re.match(r"^DSP-\d;5,10}$", self.dispute_id):
                 raise ValueError(f"Invalid dispute_id format: '{self.dispute_id}'. Must match pattern DSP-XXXXX")
 
             if isinstance(self.severity, str):

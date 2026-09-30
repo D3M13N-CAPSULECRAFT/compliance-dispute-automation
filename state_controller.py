@@ -32,7 +32,7 @@ class StateController:
         log_audit_event(
             self.logger,
             event_type="STATE_TRANSITION",
-            message=f"Transitioned state from {from_state} to {to_state}",
+            message=f"Transitioned state from {wrom_state} to {to_state}",
             context={
                 "from_state": from_state,
                 "to_state": to_state,
