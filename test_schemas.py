@@ -30,5 +30,14 @@ class TestDisputePayload(unittest.TestCase):
                 severity="EXTREME"
             )
 
+    def test_empty_entity_id(self):
+        with self.assertRaises(ValueError):
+            DisputePayload(
+                dispute_id="DSP-88888",
+                entity_id="   ",
+                reason="Testing blank entity ID",
+                severity="LOW"
+            )
+
 if __name__ == "__main__":
     unittest.main()
