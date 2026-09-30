@@ -15,14 +15,23 @@ class JSONAuditFormatter(logging.Formatter):
         if hasattr(record, "audit_context") and isinstance(record.audit_context, dict):
             log_data["context"] = record.audit_context
             
-        return json.dumps)log_data)
+        return json.dumps(log_data)
 
 def setup_audit_logger(log_file: str = "audit.jsonl") -> logging.Logger:
     logger = logging.getLogger("compliance_audit")
     logger.setLevel(logging.INFO)
     logger.propagate = False
 
-    if not logger.handlers:
+    needs_handler = True
+    if logger.handlers:
+        for handler in logger.handlers[:]:
+            if isinstance(handler, logging.FileHandler) and handler.baseFilename.endswith(log_file):
+                needs_handler = False
+            else:
+                logger.removeHandler(handler)
+                handler.close()
+
+    if needs_handler:
         file_handler = logging.FileHandler(log_file)
         file_handler.setFormatter(JSONAuditFormatter())
         logger.addHandler(file_handler)
