@@ -30,5 +30,4 @@ class StateController:
 
 if __name__ == "__main__":
     controller = StateController()
-    controller.update_state(Action.DIMMED, ActionReason.IDLE_TIMEOUT)
     controller.update_state(Action.SUSPEND, ActionReason.COMPLIANCE_DISPUTE_TRIGGER)
