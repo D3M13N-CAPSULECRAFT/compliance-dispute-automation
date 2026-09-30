@@ -12,7 +12,6 @@ class JSONAuditFormatter(logging.Formatter):
             "message": record.getMessage(),
         }
         
-        # Include custom metadata context if present
         if hasattr(record, "audit_context") and isinstance(record.audit_context, dict):
             log_data["context"] = record.audit_context
             
@@ -23,7 +22,6 @@ def setup_audit_logger(log_file: str = "audit.jsonl") -> logging.Logger:
     logger.setLevel(logging.INFO)
     logger.propagate = False
 
-    # Avoid adding duplicate handlers if logger is re-initialized
     if not logger.handlers:
         file_handler = logging.FileHandler(log_file)
         file_handler.setFormatter(JSONAuditFormatter())

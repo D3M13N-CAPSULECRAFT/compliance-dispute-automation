@@ -22,18 +22,15 @@ class DisputePayload:
 
     def __post_init__(self):
         try:
-            # Validate dispute_id format (DSP-XXXXX)
             if not re.match(r"^DSP-\d{5,10}$", self.dispute_id):
                 raise ValueError(f"Invalid dispute_id format: '{self.dispute_id}'. Must match pattern DSP-XXXXX")
 
-            # Normalize string severity into SeverityLevel Enum if passed as string
             if isinstance(self.severity, str):
                 try:
                     self.severity = SeverityLevel(self.severity.upper())
                 except ValueError:
                     raise ValueError(f"Invalid severity level: '{self.severity}'. Must be one of {[s.value for s in SeverityLevel]}")
 
-            # Ensure entity_id is non-empty
             if not self.entity_id or not self.entity_id.strip():
                 raise ValueError("entity_id cannot be empty")
 

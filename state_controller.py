@@ -40,7 +40,3 @@ class StateController:
             }
         )
         return self.current_state
-
-if __name__ == "__main__":
-    controller = StateController()
-    controller.update_state(Action.SUSPEND, ActionReason.COMPLIANCE_DISPUTE_TRIGGER)
