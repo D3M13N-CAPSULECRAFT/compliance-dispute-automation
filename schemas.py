@@ -2,6 +2,9 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
 import re
+from audit_logger import setup_audit_logger, log_audit_event
+
+audit_logger = setup_audit_logger()
 
 class SeverityLevel(Enum):
     LOW = "LOW"
@@ -18,20 +21,36 @@ class DisputePayload:
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
     def __post_init__(self):
-        # Validate dispute_id format (DSP-XXXXX)
-        if not re.match(r"^DSP-\d{5,10}$", self.dispute_id):
-            raise ValueError(f"Invalid dispute_id format: '{self.dispute_id}'. Must match pattern DSP-XXXXX")
+        try:
+            # Validate dispute_id format (DSP-XXXXX)
+            if not re.match(r"^DSP-\d{5,10}$", self.dispute_id):
+                raise ValueError(f"Invalid dispute_id format: '{self.dispute_id}'. Must match pattern DSP-XXXXX")
 
-        # Normalize string severity into SeverityLevel Enum if passed as string
-        if isinstance(self.severity, str):
-            try:
-                self.severity = SeverityLevel(self.severity.upper())
-            except ValueError:
-                raise ValueError(f"Invalid severity level: '{self.severity}'. Must be one of {[s.value for s in SeverityLevel]}")
+            # Normalize string severity into SeverityLevel Enum if passed as string
+            if isinstance(self.severity, str):
+                try:
+                    self.severity = SeverityLevel(self.severity.upper())
+                except ValueError:
+                    raise ValueError(f"Invalid severity level: '{self.severity}'. Must be one of {[s.value for s in SeverityLevel]}")
 
-        # Ensure entity_id is non-empty
-        if not self.entity_id or not self.entity_id.strip():
-            raise ValueError("entity_id cannot be empty")
+            # Ensure entity_id is non-empty
+            if not self.entity_id or not self.entity_id.strip():
+                raise ValueError("entity_id cannot be empty")
+
+            log_audit_event(
+                audit_logger,
+                event_type="PAYLOAD_VALIDATED",
+                message=f"Successfully validated payload for dispute {self.dispute_id}",
+                context=self.to_dict()
+            )
+        except ValueError as err:
+            log_audit_event(
+                audit_logger,
+                event_type="PAYLOAD_VALIDATION_FAILED",
+                message=str(err),
+                context={"dispute_id": getattr(self, "dispute_id", None)}
+            )
+            raise err
 
     def to_dict(self) -> dict:
         return {
